@@ -1,0 +1,58 @@
+# serverless.yml
+
+service: lambdaPdfGenerator
+
+custom:
+  # change this name to something unique
+  s3Bucket: pdf-files-rajalahti
+
+provider:
+  name: aws
+  region: eu-north-1
+  versionFunctions: false
+  # here we put the layers we want to use
+  layers:
+    # Google Chrome for AWS Lambda as a layer
+    # Make sure you use the latest version depending on the region
+    # https://github.com/shelfio/chrome-aws-lambda-layer
+    - arn:aws:lambda:eu-north-1:764866452798:layer:chrome-aws-lambda:22
+  # function parameters
+  runtime: nodejs14.x
+  memorySize: 2048 # recommended
+  timeout: 30
+  iamRoleStatements:
+    - Effect: Allow
+      Action:
+        - s3:PutObject
+        - s3:PutObjectAcl
+      Resource: arn:aws:s3:::${self:custom.s3Bucket}/*
+
+functions:
+  capture:
+    handler: src/capture.handler
+    environment:
+      S3_REGION: ${self:provider.region}
+      S3_BUCKET: ${self:custom.s3Bucket}
+
+resources:
+  Resources:
+    # Bucket where the screenshots are stored
+    pdfBucket:
+      Type: AWS::S3::Bucket
+      DeletionPolicy: Delete
+      Properties:
+        BucketName: ${self:custom.s3Bucket}
+        AccessControl: Private
+    # Grant public read-only access to the bucket
+    pdfBucketPolicy:
+      Type: AWS::S3::BucketPolicy
+      Properties:
+        PolicyDocument:
+          Statement:
+            - Effect: Allow
+              Action:
+                - s3:GetObject
+              Principal: "*"
+              Resource: arn:aws:s3:::${self:custom.s3Bucket}/*
+        Bucket:
+          Ref: pdfBucket
