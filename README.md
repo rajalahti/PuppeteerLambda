@@ -16,3 +16,7 @@ Puppeteer on AWS Lambda
 - Send POST request with a webpage url which you want to create a PDF from. Example request body: { "url": "https://www.gutenberg.org/cache/epub/11296/pg11296.html" }
 
 --> A PDF is created and returned as a response. The file is saved to the S3 bucket
+
+## Other stuff
+- The PDF's will be tagged and accessible
+- I plan to add dist-exif tool for modifying metadata in the near future
