@@ -12,5 +12,8 @@
   "devDependencies": {
     "chrome-aws-lambda": "^9.1.0",
     "serverless": "^2.42.0"
+  },
+  "dependencies": {
+    "pdf-lib": "^1.16.0"
   }
 }

@@ -2,6 +2,8 @@
 const chromeLambda = require('chrome-aws-lambda');
 // aws-sdk is always preinstalled in AWS Lambda in all Node.js runtimes
 const S3Client = require('aws-sdk/clients/s3');
+// require PDF-lib for metadata
+const { PDFDocument } = require('pdf-lib');
 
 // create an S3 client
 const s3 = new S3Client({ region: process.env.S3_REGION });
@@ -19,16 +21,17 @@ exports.handler = async (event) => {
 
 // The function to run
 const getPdf = async (event) => {
-    const body = JSON.parse(event.body);
+	const body = JSON.parse(event.body);
 	const url = body.url;
+	const { title, author, subject, keywords, producer, creator, creationDate, modificationDate } = body;
 
-    if (!url) {
+	if (!url) {
 		return {
 			statusCode: 400,
 			headers,
 			body: 'Send a url for pdf generation in the request body!',
 		};
-    }
+	}
 
 	// launch a headless browser
 	const browser = await chromeLambda.puppeteer.launch({
@@ -94,21 +97,35 @@ const getPdf = async (event) => {
 		},
 	});
 
-	// upload the image using the current timestamp as filename
+	const pdfDoc = await PDFDocument.load(buffer);
+
+	// Note that these fields are visible in the "Document Properties" section of
+	// most PDF readers.
+	title ? pdfDoc.setTitle(title) : "";
+	author ? pdfDoc.setAuthor(author): "";
+	subject ? pdfDoc.setSubject(subject) : "";
+	keywords ? pdfDoc.setKeywords(keywords) : "";
+	producer ? pdfDoc.setProducer(producer) : "";
+	creator ? pdfDoc.setCreator(creator) : "";
+	creationDate ? pdfDoc.setCreationDate(new Date(creationDate)) : pdfDoc.setCreationDate(new Date());
+	modificationDate ? pdfDoc.setModificationDate(new Date(modificationDate)) : "";
+
+	const data = await pdfDoc.saveAsBase64();
+
+	// upload the pdf using the current timestamp as filename
 	const result = await s3
 		.upload({
 			Bucket: process.env.S3_BUCKET,
 			Key: `${Date.now()}.pdf`,
-			Body: buffer,
-			ContentType: 'application/pdf',
+			Body: new Buffer.from(data, "base64"),
 			ACL: 'public-read',
 		})
 		.promise();
 
 	// return the uploaded image url
-    return {
-        statusCode: 200,
-        headers,
-        body: JSON.stringify({ url: result.Location }),
-    };
+	return {
+		statusCode: 200,
+		headers,
+		body: JSON.stringify({ url: result.Location }),
+	};
 };
