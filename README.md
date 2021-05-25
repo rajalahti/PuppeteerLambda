@@ -22,6 +22,7 @@ Puppeteer on AWS Lambda
 - PDF metadata can be added.
 
 Example payload: 
+```
 {
     "url": "https://www.rajalahti.me",
     "creator": "Juhani Rajalahti",
@@ -31,3 +32,4 @@ Example payload:
     "title": "Juhanin Portfolio",
     "author": "Juhani Rajalahti"
 }
+```
