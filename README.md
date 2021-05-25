@@ -19,4 +19,15 @@ Puppeteer on AWS Lambda
 
 ## Other stuff
 - The PDF's will be tagged and accessible
-- I plan to add dist-exif tool for modifying metadata in the near future
+- PDF metadata can be added.
+
+Example payload: 
+{
+    "url": "https://www.rajalahti.me",
+    "creator": "Juhani Rajalahti",
+    "producer": "Juhani",
+    "keywords": ["homepage", "pdf-test"],
+    "subject": "personal page",
+    "title": "Juhanin Portfolio",
+    "author": "Juhani Rajalahti"
+}
