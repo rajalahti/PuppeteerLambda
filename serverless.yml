@@ -1,7 +1,6 @@
 # serverless.yml
 
 service: lambdaPdfGenerator
-
 custom:
   # change this name to something unique
   s3Bucket: pdf-files-rajalahti
@@ -36,7 +35,7 @@ functions:
 
 resources:
   Resources:
-    # Bucket where the screenshots are stored
+    # Bucket where the PDFs are stored
     pdfBucket:
       Type: AWS::S3::Bucket
       DeletionPolicy: Delete

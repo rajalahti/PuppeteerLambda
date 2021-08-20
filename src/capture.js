@@ -89,6 +89,7 @@ const getPdf = async (event) => {
 	// Create PDF
 	const buffer = await page.pdf({
 		format: 'a4',
+		printBackground: true,
 		margin: {
 			top: 50,
 			bottom: 50,
