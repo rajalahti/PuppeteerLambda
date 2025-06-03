@@ -123,7 +123,7 @@ const getPdf = async (event) => {
 		})
 		.promise();
 
-	// return the uploaded image url
+        // return the uploaded PDF url
 	return {
 		statusCode: 200,
 		headers,
