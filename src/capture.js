@@ -118,7 +118,7 @@ const getPdf = async (event) => {
 		.upload({
 			Bucket: process.env.S3_BUCKET,
 			Key: `${Date.now()}.pdf`,
-			Body: new Buffer.from(data, "base64"),
+                        Body: Buffer.from(data, "base64"),
 			ACL: 'public-read',
 		})
 		.promise();
